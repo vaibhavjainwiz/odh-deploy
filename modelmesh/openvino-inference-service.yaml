@@ -9,7 +9,10 @@ spec:
     model:
       modelFormat:
         name: onnx
-      runtime: ovms-1.x
+        version: '1'
+      name: ''
+      resources: {}
+      runtime: ovms-1x
       storage:
-        key: localMinIO
+        key: aws-connection-localminio
         path: onnx/mnist.onnx

@@ -1,0 +1,13 @@
+apiVersion: serving.kserve.io/v1beta1
+kind: InferenceService
+metadata:
+  annotations:
+    serving.knative.openshift.io/enablePassthrough: "true"
+    sidecar.istio.io/inject: "true"
+    sidecar.istio.io/rewriteAppHTTPProbers: "true"
+  name: example-tensor-flow
+spec:
+  predictor:
+    serviceAccountName: sa
+    tensorflow:
+      storageUri: s3://modelmesh-example-models/tensorflow/flowers-2

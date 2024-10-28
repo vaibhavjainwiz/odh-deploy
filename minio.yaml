@@ -8,6 +8,10 @@ spec:
       port: 9000
       protocol: TCP
       targetPort: 9000
+    - name: minio-console-port
+      protocol: TCP
+      port: 9001
+      targetPort: 9001
   selector:
     app: minio
 ---
@@ -23,14 +27,41 @@ metadata:
 spec:
   containers:
     - args:
-        - server
-        - /data1
+        - minio server /data --console-address :9001
+      command:
+        - /bin/bash
+        - -c
       env:
-        - name: MINIO_ACCESS_KEY
-          value:  password
-        - name: MINIO_SECRET_KEY
+        - name: MINIO_ROOT_USER
+          value:  admin
+        - name: MINIO_ROOT_PASSWORD
           value: password
-      # image: quay.io/jooholee/modelmesh-minio-examples:openvino
-      image: quay.io/opendatahub/modelmesh-minio-examples:v0.8.0
+      image: quay.io/minio/minio:latest
       imagePullPolicy: Always
       name: minio
+      securityContext:
+        capabilities:
+          drop:
+            - ALL
+        runAsNonRoot: true
+        allowPrivilegeEscalation: false
+        seccompProfile:
+          type: RuntimeDefault
+---
+#oc port-forward -n minio svc/minio 9000 9001
+#http://localhost:9001/
+
+kind: Route
+apiVersion: route.openshift.io/v1
+metadata:
+  name: minio-console
+spec:
+  to:
+    kind: Service
+    name: minio
+    weight: 100
+  port:
+    targetPort: minio-console-port
+  tls:
+    termination: edge
+  wildcardPolicy: None

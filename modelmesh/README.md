@@ -1,20 +1,8 @@
-Specify the inference strategy by setting the INFERENCE_STRATEGY environment variable to either kserve or modelmesh.
-
-For the Kserve inference:
-```
-export INFERENCE_STRATEGY=kserve
-```
-
-For the ModelMesh inference:
-```
-export INFERENCE_STRATEGY=modelmesh
-```
-
 ### Install OpenDataHub operator
 ```
 oc create -f odh-operator-subscription.yaml
 oc new-project model-serving
-oc create -f ./${INFERENCE_STRATEGY}/dataScienceCluster.yaml
+oc create -f dataScienceCluster.yaml
 ```
 
 ### Deploy Minio
@@ -25,7 +13,7 @@ oc create -f minio.yaml
 
 ### Deploy Model
 ```
-export test_mm_ns=${INFERENCE_STRATEGY}-demo
+export test_mm_ns=modelmesh-demo
 oc new-project ${test_mm_ns} --skip-config-write=true
 oc label namespace ${test_mm_ns} modelmesh-enabled=true --overwrite=true
 oc create -f minio-secret.yaml -n ${test_mm_ns}
